@@ -44,20 +44,18 @@ func main() {
 	defer cc2.Close()
 	c3 := purchase.NewPurchaseServiceClient(cc2)
 	var i int32
-	for i = 0; i < 10	; i++ {
+	for i = 0; i < 10; i++ {
 		wg.Add(1)
-		go orderProcess(c1, c2,c3, &wg, i)
+		go orderProcess(c1, c2, c3, &wg, i)
 	}
 
 	wg.Wait()
-
-	
 	fmt.Println("Checking for Availablity of item ")
 	availableReq := &availablequantity.CheckProductAvailableRequest{Pr: &availablequantity.Product{Product: "X"}}
 	res, _ := c1.CheckProductAvailable(context.Background(), availableReq)
-	fmt.Println("Item available " ,res.Qty)
-	if res.Qty==0{
-		fmt.Println("Item exhausted ")
+	fmt.Println("Item available ", res.Qty)
+	if res.Qty == 0 {
+		fmt.Println("Stock for Item X  exhausted ")
 	}
 
 }
@@ -73,7 +71,7 @@ func orderProcess(c availablequantity.CheckProductAvailableServiceClient,
 	}
 	log.Printf("Available Quantity %d USer : %d", res.Qty, i)
 
-	addToCartReq := &addtocart.AddToCartRequest{Pr: &addtocart.Product{Name: "X", Qty: randomQuantity()},UserNo: i}
+	addToCartReq := &addtocart.AddToCartRequest{Pr: &addtocart.Product{Name: "X", Qty: randomQuantity()}, UserNo: i}
 	res1, err := c1.AddToCart(context.Background(), addToCartReq)
 	if err != nil {
 		log.Fatalf("Error while calling availablity server %v", err)
@@ -85,7 +83,7 @@ func orderProcess(c availablequantity.CheckProductAvailableServiceClient,
 	if err != nil {
 		log.Fatalf("Error while calling availablity server %v", err)
 	}
-	log.Printf("Purchase Status for User %d  Status  %v ", i,res2.Success)
+	log.Printf("Purchase Status for User %d  Status  %v  Message %s ", i, res2.Success, res2.ErrMessage)
 
 	wg.Done()
 }

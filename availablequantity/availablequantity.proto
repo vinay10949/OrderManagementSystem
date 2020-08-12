@@ -23,6 +23,7 @@ message UpdateProductQuantityRequest{
 
 message UpdateProductQuantityResponse{
   bool success=1;
+  string message=2;
 }
 
 service CheckProductAvailableService{

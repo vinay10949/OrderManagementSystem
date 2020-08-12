@@ -14,26 +14,40 @@ import (
 type server struct{}
 
 func (*server) PurchaseProduct(ctx context.Context, req *purchase.PurchaseRequest) (*purchase.PurchaseResponse, error) {
-	c1:=addtocart.NewAddToCartServiceClient(addToCartService)
+	purchaseResponse := &purchase.PurchaseResponse{}
+
+	c1 := addtocart.NewAddToCartServiceClient(addToCartService)
 	getItem := &addtocart.GetProductFromUserCartRequest{UserNo: req.UserNo}
 	res, _ := c1.GetProductFromUserCart(context.Background(), getItem)
-	fmt.Println("Response ",res)
-	purchaseResponse := &purchase.PurchaseResponse{}
-	if res.Name!="" && res.Qty>0{
-		fmt.Println(fmt.Sprintf(" Proceeding23232 UserNo : %d ProductName : %s Qty :  %d ",req.UserNo,res.Name,res.Qty))
-
+	c := availablequantity.NewCheckProductAvailableServiceClient(productAvailablityService)
+	availableReq := &availablequantity.CheckProductAvailableRequest{Pr: &availablequantity.Product{Product: res.Name}}
+	res1, _ := c.CheckProductAvailable(context.Background(), availableReq)
+	fmt.Println("Added Quantity ", res.Qty, " Available ", res1.Qty, " Can proceed ", res.Qty < res1.Qty)
+	if res1.Qty == 0 {
+		purchaseResponse.Success = false
+		purchaseResponse.ErrMessage = "No more stock available Sorry"
+		return purchaseResponse, nil
+	}
+	if res.Qty > res1.Qty {
+		purchaseResponse.Success = false
+		purchaseResponse.ErrMessage = "Quantity Not Available"
+		return purchaseResponse, nil
+	} else {
+		fmt.Println(fmt.Sprintf(" Proceeding UserNo : %d ProductName : %s Qty :  %d ", req.UserNo, res.Name, res.Qty))
 		c := availablequantity.NewCheckProductAvailableServiceClient(productAvailablityService)
-		updateQty := &availablequantity.UpdateProductQuantityRequest{Pr: &availablequantity.Product{Product: res.Name },Qty: res.Qty}
-		res, err := c.UpdateProductAvailable(context.Background(), updateQty)
-		fmt.Println("Purchase Status ",res.Success, " Error ",err )
-		if res.Success{
+		updateQty := &availablequantity.UpdateProductQuantityRequest{Pr: &availablequantity.Product{Product: res.Name}, Qty: res.Qty}
+		res3, _ := c.UpdateProductAvailable(context.Background(), updateQty)
+		fmt.Println("Purchase Status ", res3.Success)
+		if res3.Success {
 			purchaseResponse.Success = true
-			purchaseResponse.ErrMessage = ""
+			purchaseResponse.ErrMessage = fmt.Sprintf("Item Quantity '%d' allocated", res.Qty)
 		} else {
 			purchaseResponse.Success = false
 			purchaseResponse.ErrMessage = "Quantity Exhausted"
 		}
+
 	}
+
 	return purchaseResponse, nil
 }
 
