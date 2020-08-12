@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package availablequantity;
+
+option go_package="availablequantity";
+
+message Product{
+  string product=1;
+}
+
+message CheckProductAvailableRequest{
+  Product pr=1;
+}
+
+message CheckProductAvailableResponse{
+  int32 qty=1;
+}
+
+message UpdateProductQuantityRequest{
+  Product pr=1;
+  int32 qty=2;
+}
+
+message UpdateProductQuantityResponse{
+  bool success=1;
+}
+
+service CheckProductAvailableService{
+  rpc checkProductAvailable(CheckProductAvailableRequest) returns (CheckProductAvailableResponse){};
+  rpc updateProductAvailable(UpdateProductQuantityRequest) returns (UpdateProductQuantityResponse){};
+}
+
+

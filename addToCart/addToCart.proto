@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package addtocart;
+
+option go_package="addtocart";
+
+message Product{
+  string name=1;
+  int32 qty=2;
+}
+
+message AddToCartRequest{
+  Product pr=1;
+  int32 userNo=2;
+}
+
+message AddToCartResponse{
+  bool success=1;
+  string errMessage=2;
+}
+
+message GetProductFromUserCartRequest{
+  int32 userNo=1;
+}
+
+message GetProductFromUserCartResponse{
+  string name=1;
+  int32 qty=2;
+}
+
+service AddToCartService{
+  rpc addToCart(AddToCartRequest) returns (AddToCartResponse){};
+  rpc getProductFromUserCart(GetProductFromUserCartRequest) returns (GetProductFromUserCartResponse){};
+
+}
+
+

@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package purchase;
+
+option go_package="purchase";
+
+
+
+message PurchaseRequest{
+  int32 userNo=2;
+}
+
+message PurchaseResponse{
+  bool success=1;
+  string errMessage=2;
+}
+
+service PurchaseService{
+  rpc purchaseProduct(PurchaseRequest) returns (PurchaseResponse){};
+}
+
+
