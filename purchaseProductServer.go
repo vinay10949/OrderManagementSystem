@@ -17,14 +17,15 @@ func (*server) PurchaseProduct(ctx context.Context, req *purchase.PurchaseReques
 	c1:=addtocart.NewAddToCartServiceClient(addToCartService)
 	getItem := &addtocart.GetProductFromUserCartRequest{UserNo: req.UserNo}
 	res, _ := c1.GetProductFromUserCart(context.Background(), getItem)
+	fmt.Println("Response ",res)
 	purchaseResponse := &purchase.PurchaseResponse{}
 	if res.Name!="" && res.Qty>0{
-		fmt.Println(fmt.Sprintf(" Proceeding UserNo : %d ProductName : %s Qty :  %d ",req.UserNo,res.Name,res.Qty))
+		fmt.Println(fmt.Sprintf(" Proceeding23232 UserNo : %d ProductName : %s Qty :  %d ",req.UserNo,res.Name,res.Qty))
 
 		c := availablequantity.NewCheckProductAvailableServiceClient(productAvailablityService)
 		updateQty := &availablequantity.UpdateProductQuantityRequest{Pr: &availablequantity.Product{Product: res.Name },Qty: res.Qty}
-		res, _ := c.UpdateProductAvailable(context.Background(), updateQty)
-
+		res, err := c.UpdateProductAvailable(context.Background(), updateQty)
+		fmt.Println("Purchase Status ",res.Success, " Error ",err )
 		if res.Success{
 			purchaseResponse.Success = true
 			purchaseResponse.ErrMessage = ""

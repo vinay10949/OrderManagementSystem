@@ -22,7 +22,7 @@ func (*server) AddToCart(ctx context.Context, req *addtocart.AddToCartRequest) (
 	res, _ := c.CheckProductAvailable(context.Background(), availableReq)
 	addToCartResponse := &addtocart.AddToCartResponse{}
 	if res.Qty > 0 {
-		userQty.Store(req.UserNo,map[string]int32{req.Pr.Name: res.Qty})
+		userQty.Store(req.UserNo,map[string]int32{req.Pr.Name: req.Pr.Qty})
 		addToCartResponse.Success = true
 		addToCartResponse.ErrMessage = ""
 		fmt.Println(fmt.Sprintf("Added Product : %s for User : %d Qty : %d",req.Pr.Name,req.UserNo,req.Pr.Qty))
@@ -47,9 +47,11 @@ func (*server) GetProductFromUserCart(ctx context.Context, req *addtocart.GetPro
 	for k := range v {
 		keys = append(keys, k)
 	}
+	fmt.Println(val,ok)
 	if ok{
 		res.Name=keys[0]
 		res.Qty= v[keys[0]]
+		fmt.Println("Keys ",keys)
 	}
 
 	return &res, nil

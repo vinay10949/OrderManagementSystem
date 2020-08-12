@@ -14,6 +14,7 @@ import (
 )
 
 func main() {
+
 	var wg sync.WaitGroup
 	cc, err := grpc.Dial("localhost:8081", grpc.WithInsecure())
 
@@ -44,11 +45,13 @@ func main() {
 	c3 := purchase.NewPurchaseServiceClient(cc2)
 	var i int32
 	for i = 0; i < 10	; i++ {
+		wg.Add(1)
 		go orderProcess(c1, c2,c3, &wg, i)
 	}
 
-	fmt.Println("Waited")
+	wg.Wait()
 
+	
 	fmt.Println("Checking for Availablity of item ")
 	availableReq := &availablequantity.CheckProductAvailableRequest{Pr: &availablequantity.Product{Product: "X"}}
 	res, _ := c1.CheckProductAvailable(context.Background(), availableReq)
@@ -56,7 +59,6 @@ func main() {
 	if res.Qty==0{
 		fmt.Println("Item exhausted ")
 	}
-	wg.Wait()
 
 }
 
@@ -64,7 +66,6 @@ func orderProcess(c availablequantity.CheckProductAvailableServiceClient,
 	c1 addtocart.AddToCartServiceClient,
 	c2 purchase.PurchaseServiceClient,
 	wg *sync.WaitGroup, i int32) {
-	wg.Add(1)
 	availableReq := &availablequantity.CheckProductAvailableRequest{Pr: &availablequantity.Product{Product: "X"}}
 	res, err := c.CheckProductAvailable(context.Background(), availableReq)
 	if err != nil {
