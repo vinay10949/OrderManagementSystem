@@ -1,4 +1,11 @@
 # Solve Race Conditions in OrderManagementSystem
+-------
+Plot: 
+
+An eCommerce company is having a sale, where some products are having lightning deals with an extra discount for 30 mins. When a product is having a lightning deal, it is listed in the landing page and a huge amount of traffic is bombarded on the product’s detail page. One such product X is having stock of 10 and 1,00,000 users have landed on its product details page out of which at time zero 10,000 users have added product in their cart and proceed to checkout. Since available quality is only 10, there will be a race condition among 10,000 users to get 10 quantities. 
+
+Below solution solve the race condition, can handle high concurrency with ease,microservices talk to each other
+
 
 -------
 
