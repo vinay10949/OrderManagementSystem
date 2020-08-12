@@ -13,6 +13,9 @@ import (
 	"time"
 )
 
+const NO_OF_USERS int32=100
+
+
 func main() {
 
 	var wg sync.WaitGroup
@@ -44,7 +47,7 @@ func main() {
 	defer cc2.Close()
 	c3 := purchase.NewPurchaseServiceClient(cc2)
 	var i int32
-	for i = 0; i < 10; i++ {
+	for i = 0; i < NO_OF_USERS; i++ {
 		wg.Add(1)
 		go orderProcess(c1, c2, c3, &wg, i)
 	}
