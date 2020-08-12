@@ -33,7 +33,7 @@ func (*server) CheckProductAvailable(ctx context.Context, req *availablequantity
 	}
 	if productQuantity < 0 {
 		resp.Qty = 0
-		mutex.Unlock()
+		mutex.RUnlock()
 		return &resp, nil
 	}
 	resp.Qty = productQuantity
